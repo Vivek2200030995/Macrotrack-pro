@@ -17,7 +17,7 @@ A modern nutrition and macro tracking web application built using HTML, CSS, and
 - JavaScript
 
 ## Live Demo
-macrotracker-pro.netlify.app
+https://macrotracker-pro.netlify.app
 
 ## Author
 CH. Vivek Narayana
