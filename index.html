@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MacroTrack Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0e1117;--card:#161b27;--card2:#1c2333;
+  --border:#2a3347;--border2:#1e2d45;
+  --cal:#ff6b35;--pro:#00e5a0;--carb:#ffd60a;--fat:#a78bfa;--fib:#f472b6;
+  --text:#e8edf5;--muted:#5a7090;--white:#fff;
+  --red:#f87171;--green:#00e5a0;
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding:0 0 60px;}
+
+/* ── HEADER ── */
+.header{padding:28px 24px 20px;border-bottom:1px solid var(--border);margin-bottom:28px;}
+.header-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.logo{font-size:1.6rem;font-weight:800;color:var(--white);letter-spacing:-0.5px;}
+.logo span{color:var(--pro);}
+.date-txt{font-size:.82rem;color:#4a6880;font-weight:500;}
+
+/* ── MAIN ── */
+.main{max-width:900px;margin:0 auto;padding:0 20px;}
+
+/* ── GOALS ROW ── */
+.goals-row{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:14px 18px;margin-bottom:20px;
+}
+.goals-label{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;}
+.goals-fields{display:flex;gap:8px;flex-wrap:wrap;flex:1;}
+.gf{display:flex;flex-direction:column;gap:3px;}
+.gf label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.gf label.c{color:var(--cal);}
+.gf label.p{color:var(--pro);}
+.gf label.cr{color:var(--carb);}
+.gf label.f{color:var(--fat);}
+.gf input{
+  width:76px;background:var(--bg);border:1px solid var(--border2);
+  border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;
+  font-size:.82rem;font-weight:600;padding:6px 8px;outline:none;
+}
+.gf input:focus{border-color:var(--pro);}
+.goal-btn{
+  background:var(--pro);border:none;border-radius:9px;
+  color:#050c1a;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;
+  padding:8px 16px;cursor:pointer;white-space:nowrap;transition:opacity .2s;
+}
+.goal-btn:hover{opacity:.85;}
+
+/* ── DAY TOTALS ── */
+.totals-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;}
+@media(max-width:560px){.totals-row{grid-template-columns:repeat(3,1fr);}}
+.tot-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:13px 10px;text-align:center;position:relative;overflow:hidden;
+}
+.tot-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;}
+.tot-card.cal::after{background:var(--cal);}
+.tot-card.pro::after{background:var(--pro);}
+.tot-card.carb::after{background:var(--carb);}
+.tot-card.fat::after{background:var(--fat);}
+.tot-card.fib::after{background:var(--fib);}
+.tot-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px;}
+.tot-val{font-size:1.55rem;font-weight:800;line-height:1;letter-spacing:-.5px;}
+.tot-card.cal .tot-val{color:var(--cal);}
+.tot-card.pro .tot-val{color:var(--pro);}
+.tot-card.carb .tot-val{color:var(--carb);}
+.tot-card.fat .tot-val{color:var(--fat);}
+.tot-card.fib .tot-val{color:var(--fib);}
+.tot-goal{font-size:.65rem;color:var(--muted);margin-top:3px;font-weight:500;}
+.tot-diff{font-size:.65rem;font-weight:700;margin-top:2px;}
+.tot-diff.over{color:var(--cal);}
+.tot-diff.good{color:var(--pro);}
+
+/* ── PROGRESS BARS ── */
+.bars-section{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:14px 18px;margin-bottom:24px;
+  display:flex;flex-direction:column;gap:9px;
+}
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-label{width:72px;font-size:.72rem;font-weight:700;color:var(--muted);text-align:right;flex-shrink:0;}
+.bar-track{flex:1;height:16px;background:var(--bg);border-radius:50px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:50px;width:0%;transition:width .5s ease;display:flex;align-items:center;padding:0 8px;}
+.bar-fill span{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap;}
+.bar-pct{width:38px;font-size:.72rem;font-weight:700;text-align:right;flex-shrink:0;}
+
+/* ── MEAL SECTIONS ── */
+.meals{display:flex;flex-direction:column;gap:16px;margin-bottom:20px;}
+
+.meal-section{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+}
+
+/* Meal Header */
+.meal-header{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+.meal-emoji{font-size:1.3rem;}
+.meal-title{font-size:1rem;font-weight:700;color:var(--white);}
+.meal-subtitle{font-size:.67rem;color:var(--muted);margin-top:1px;}
+.meal-kcal{
+  margin-left:auto;font-size:.72rem;font-weight:700;
+  padding:3px 10px;border-radius:50px;border:1px solid;transition:all .3s;
+}
+.meal-kcal.empty{color:var(--muted);border-color:var(--border);}
+.meal-kcal.filled{color:var(--cal);border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.08);}
+
+/* Input Area */
+.meal-input{padding:14px 18px;border-bottom:1px solid var(--border);}
+.input-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:7px;}
+.food-textarea{
+  width:100%;background:var(--bg);border:1px solid var(--border2);
+  border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;
+  font-size:.9rem;font-weight:400;padding:11px 14px;
+  outline:none;resize:none;min-height:60px;line-height:1.6;
+  transition:border-color .2s,box-shadow .2s;
+}
+.food-textarea:focus{border-color:rgba(0,229,160,.4);box-shadow:0 0 0 3px rgba(0,229,160,.06);}
+.food-textarea::placeholder{color:var(--muted);font-size:.85rem;}
+.input-actions{display:flex;align-items:center;gap:10px;margin-top:10px;}
+.input-hint{flex:1;font-size:.68rem;color:var(--muted);line-height:1.5;}
+.input-hint b{color:var(--pro);}
+.calc-btn{
+  background:linear-gradient(135deg,var(--pro),#00c4ff);
+  border:none;border-radius:10px;color:#050c1a;
+  font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;
+  padding:10px 24px;cursor:pointer;white-space:nowrap;
+  transition:all .2s;display:flex;align-items:center;gap:7px;flex-shrink:0;
+}
+.calc-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,229,160,.25);}
+.calc-btn:active{transform:none;}
+
+/* Error */
+.meal-error{
+  margin:8px 0 0;padding:9px 13px;
+  background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);
+  border-radius:9px;font-size:.78rem;color:var(--red);
+}
+
+/* Food Table */
+.food-table-wrap{}
+.food-table{width:100%;border-collapse:collapse;}
+.food-table th{
+  padding:9px 14px;font-size:.62rem;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--muted);font-weight:700;text-align:right;
+  background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);
+}
+.food-table th:first-child{text-align:left;}
+.food-table td{
+  padding:9px 14px;font-size:.82rem;font-weight:600;
+  text-align:right;border-bottom:1px solid rgba(42,51,71,.5);
+  color:var(--text);
+}
+.food-table td:first-child{text-align:left;font-weight:600;}
+.food-table tr:last-child td{border-bottom:none;}
+.food-table tr:hover td{background:rgba(255,255,255,.02);}
+.td-cal{color:var(--cal)!important;}
+.td-pro{color:var(--pro)!important;}
+.td-carb{color:var(--carb)!important;}
+.td-fat{color:var(--fat)!important;}
+.td-fib{color:var(--fib)!important;}
+.total-tr td{
+  background:rgba(0,229,160,.03)!important;
+  border-top:1px solid var(--border)!important;
+  font-weight:800!important;
+}
+.del-btn{
+  background:none;border:none;color:var(--muted);
+  cursor:pointer;font-size:.82rem;padding:2px 6px;
+  border-radius:5px;transition:all .15s;
+}
+.del-btn:hover{background:rgba(248,113,113,.15);color:var(--red);}
+.clear-btn-small{
+  background:none;border:1px solid var(--border);
+  color:var(--muted);font-family:'Inter',sans-serif;
+  font-size:.62rem;font-weight:600;padding:2px 9px;
+  border-radius:6px;cursor:pointer;transition:all .15s;
+}
+.clear-btn-small:hover{color:var(--red);border-color:rgba(248,113,113,.3);}
+.no-items{padding:20px;text-align:center;color:var(--muted);font-size:.82rem;}
+
+/* ── RESET ALL ── */
+.reset-row{text-align:right;margin-bottom:14px;}
+.reset-all-btn{
+  background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);
+  color:var(--red);font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;
+  padding:7px 16px;border-radius:9px;cursor:pointer;transition:all .2s;
+}
+.reset-all-btn:hover{background:rgba(248,113,113,.16);}
+
+/* ── ANALYSIS ── */
+.analysis-section{display:none;margin-bottom:20px;}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+@media(max-width:520px){.analysis-grid{grid-template-columns:1fr;}}
+.ana-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.ana-head{font-size:.8rem;font-weight:700;margin-bottom:10px;}
+.ana-head.g{color:var(--pro);}
+.ana-head.b{color:var(--cal);}
+.ana-item{font-size:.78rem;font-weight:500;margin-bottom:5px;line-height:1.45;color:var(--text);}
+.score-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:18px;text-align:center;
+}
+.score-num{font-size:3.2rem;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--carb),var(--cal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.score-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-top:4px;}
+.verdict-row{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:10px;}
+.vp{padding:4px 12px;border-radius:50px;font-size:.68rem;font-weight:700;border:1px solid;}
+.vp.g{background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.25);color:var(--pro);}
+.vp.r{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.25);color:var(--red);}
+.vp.y{background:rgba(255,214,10,.08);border-color:rgba(255,214,10,.25);color:var(--carb);}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:20px;right:20px;
+  background:var(--card2);border:1px solid var(--pro);
+  color:var(--text);padding:10px 16px;border-radius:10px;
+  font-size:.8rem;font-weight:600;z-index:999;
+  transform:translateY(70px);opacity:0;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:300px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+
+footer{text-align:center;color:var(--muted);font-size:.7rem;margin-top:16px;}
+footer b{color:var(--pro);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="logo">Macro<span>Track</span> Pro</div>
+    </div>
+    <div class="date-txt" id="dateEl"></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- GOALS -->
+  <div class="goals-row">
+    <div class="goals-label">Daily Goals</div>
+    <div class="goals-fields">
+      <div class="gf"><label class="c">🔥 Cal</label><input type="number" id="g-cal" value="1800"/></div>
+      <div class="gf"><label class="p">💪 Protein (g)</label><input type="number" id="g-pro" value="150"/></div>
+      <div class="gf"><label class="cr">⚡ Carbs (g)</label><input type="number" id="g-carb" value="150"/></div>
+      <div class="gf"><label class="f">🥑 Fats (g)</label><input type="number" id="g-fat" value="62"/></div>
+    </div>
+    <button class="goal-btn" onclick="saveGoals()">Save Goals</button>
+  </div>
+
+  <!-- DAY TOTALS -->
+  <div class="totals-row">
+    <div class="tot-card cal"><div class="tot-label">🔥 Calories</div><div class="tot-val" id="T-cal">0</div><div class="tot-goal" id="TG-cal">/1800 kcal</div><div class="tot-diff" id="TD-cal">—</div></div>
+    <div class="tot-card pro"><div class="tot-label">💪 Protein</div><div class="tot-val" id="T-pro">0g</div><div class="tot-goal" id="TG-pro">/150g</div><div class="tot-diff" id="TD-pro">—</div></div>
+    <div class="tot-card carb"><div class="tot-label">⚡ Carbs</div><div class="tot-val" id="T-carb">0g</div><div class="tot-goal" id="TG-carb">/150g</div><div class="tot-diff" id="TD-carb">—</div></div>
+    <div class="tot-card fat"><div class="tot-label">🥑 Fats</div><div class="tot-val" id="T-fat">0g</div><div class="tot-goal" id="TG-fat">/62g</div><div class="tot-diff" id="TD-fat">—</div></div>
+    <div class="tot-card fib"><div class="tot-label">🌾 Fiber</div><div class="tot-val" id="T-fib">0g</div><div class="tot-goal" id="TG-fib">/25g</div><div class="tot-diff" id="TD-fib">—</div></div>
+  </div>
+
+  <!-- PROGRESS BARS -->
+  <div class="bars-section">
+    <div class="bar-row"><div class="bar-label">🔥 Calories</div><div class="bar-track"><div class="bar-fill" id="B-cal" style="background:linear-gradient(90deg,var(--cal),#ff9060)"><span id="BS-cal"></span></div></div><div class="bar-pct" id="BP-cal" style="color:var(--cal)">0%</div></div>
+    <div class="bar-row"><div class="bar-label">💪 Protein</div><div class="bar-track"><div class="bar-fill" id="B-pro" style="background:linear-gradient(90deg,var(--pro),#00ffcc)"><span id="BS-pro"></span></div></div><div class="bar-pct" id="BP-pro" style="color:var(--pro)">0%</div></div>
+    <div class="bar-row"><div class="bar-label">⚡ Carbs</div><div class="bar-track"><div class="bar-fill" id="B-carb" style="background:linear-gradient(90deg,var(--carb),#fff066)"><span id="BS-carb"></span></div></div><div class="bar-pct" id="BP-carb" style="color:var(--carb)">0%</div></div>
+    <div class="bar-row"><div class="bar-label">🥑 Fats</div><div class="bar-track"><div class="bar-fill" id="B-fat" style="background:linear-gradient(90deg,var(--fat),#c4b5fd)"><span id="BS-fat"></span></div></div><div class="bar-pct" id="BP-fat" style="color:var(--fat)">0%</div></div>
+    <div class="bar-row"><div class="bar-label">🌾 Fiber</div><div class="bar-track"><div class="bar-fill" id="B-fib" style="background:linear-gradient(90deg,var(--fib),#fb7ec8)"><span id="BS-fib"></span></div></div><div class="bar-pct" id="BP-fib" style="color:var(--fib)">0%</div></div>
+  </div>
+
+  <!-- RESET ALL -->
+  <div class="reset-row">
+    <button class="reset-all-btn" onclick="resetAll()">🗑️ Reset All Meals</button>
+  </div>
+
+  <!-- MEALS -->
+  <div class="meals" id="mealsContainer"></div>
+
+  <!-- ANALYSIS -->
+  <div class="analysis-section" id="analysisSection">
+    <div class="analysis-grid">
+      <div class="ana-card"><div class="ana-head g">👍 What's Working</div><div id="goodList"></div></div>
+      <div class="ana-card"><div class="ana-head b">❌ Needs Attention</div><div id="badList"></div></div>
+    </div>
+    <div class="score-card">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-label">/ 10 — Today's Diet Score</div>
+      <div class="verdict-row" id="verdictRow"></div>
+    </div>
+  </div>
+
+  <footer>
+    <b>MacroTrack Pro</b> · Type anything · Calculates automatically
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// FOOD DATABASE — per 100g/ml
+// Comprehensive with keywords for smart matching
+// ════════════════════════════════════════════════════════
+const DB = [
+  // EGGS & DAIRY
+  {k:['egg','whole egg','boiled egg','fried egg','scrambled egg','poached egg'],cal:155,pro:13,carb:1.1,fat:11,fib:0},
+  {k:['egg white','whites'],cal:52,pro:11,carb:0.7,fat:0.2,fib:0},
+  {k:['egg yolk','yolk'],cal:322,pro:16,carb:3.6,fat:27,fib:0},
+  {k:['milk','full fat milk','whole milk','cow milk','buffalo milk'],cal:61,pro:3.2,carb:4.8,fat:3.3,fib:0},
+  {k:['skim milk','toned milk','low fat milk','skimmed milk'],cal:34,pro:3.4,carb:5,fat:0.1,fib:0},
+  {k:['boiled milk','hot milk'],cal:61,pro:3.2,carb:4.8,fat:3.3,fib:0},
+  {k:['curd','dahi','yogurt','yoghurt','plain yogurt'],cal:60,pro:3.5,carb:4,fat:3,fib:0},
+  {k:['greek yogurt','greek curd'],cal:59,pro:10,carb:3.6,fat:0.4,fib:0},
+  {k:['paneer','cottage cheese','chenna'],cal:265,pro:18,carb:3.4,fat:20,fib:0},
+  {k:['butter'],cal:717,pro:0.9,carb:0.1,fat:81,fib:0},
+  {k:['ghee','clarified butter'],cal:900,pro:0,carb:0,fat:100,fib:0},
+  {k:['cheese','cheddar','processed cheese','slice cheese'],cal:402,pro:25,carb:1.3,fat:33,fib:0},
+  {k:['cream','heavy cream','whipping cream'],cal:340,pro:2.1,carb:2.7,fat:36,fib:0},
+
+  // CHICKEN
+  {k:['chicken breast','boneless chicken','grilled chicken','baked chicken','roasted chicken','cooked chicken','boiled chicken','steamed chicken','chicken fillet'],cal:165,pro:31,carb:0,fat:3.6,fib:0},
+  {k:['chicken thigh','chicken leg','drumstick'],cal:209,pro:26,carb:0,fat:11,fib:0},
+  {k:['chicken wings','chicken wing','lollipop','chicken lollipop','lollipops'],cal:203,pro:30,carb:0,fat:8.1,fib:0},
+  {k:['fried chicken','deep fried chicken','kfc','crispy chicken'],cal:260,pro:25,carb:8,fat:14,fib:0.5},
+  {k:['chicken curry','chicken masala','murgh'],cal:165,pro:18,carb:6,fat:8,fib:1.2},
+  {k:['butter chicken','murgh makhani','chicken makhani'],cal:150,pro:12,carb:8,fat:8,fib:1},
+  {k:['chicken tikka','tikka'],cal:200,pro:28,carb:4,fat:8,fib:0.5},
+  {k:['chicken biryani','biryani chicken'],cal:170,pro:9,carb:22,fat:5,fib:1.2},
+  {k:['tandoori chicken'],cal:180,pro:27,carb:4,fat:6,fib:0.5},
+
+  // MUTTON / FISH
+  {k:['mutton','lamb','goat meat','goat'],cal:294,pro:25,carb:0,fat:21,fib:0},
+  {k:['mutton curry','lamb curry','goat curry'],cal:200,pro:20,carb:4,fat:12,fib:0.5},
+  {k:['fish','rohu','catla','tilapia','basa','pomfret'],cal:128,pro:26,carb:0,fat:2.7,fib:0},
+  {k:['fish curry','fish masala'],cal:140,pro:18,carb:5,fat:6,fib:1},
+  {k:['tuna','canned tuna'],cal:116,pro:26,carb:0,fat:1,fib:0},
+  {k:['salmon','grilled salmon'],cal:208,pro:20,carb:0,fat:13,fib:0},
+  {k:['prawns','shrimp','prawn'],cal:99,pro:24,carb:0.2,fat:0.3,fib:0},
+  {k:['egg curry','anda curry','anda masala'],cal:155,pro:11,carb:5,fat:10,fib:0.5},
+
+  // WHEY & PROTEIN SUPPLEMENTS
+  {k:['whey','whey protein','whey isolate','protein powder','scoop whey'],cal:400,pro:83,carb:10,fat:3.3,fib:0},
+  {k:['casein','casein protein'],cal:380,pro:80,carb:8,fat:2,fib:0},
+  {k:['mass gainer','weight gainer','gainer'],cal:380,pro:20,carb:65,fat:4,fib:2},
+  {k:['protein bar','whey bar'],cal:200,pro:20,carb:22,fat:7,fib:3},
+
+  // RICE & GRAINS
+  {k:['rice','white rice','cooked rice','boiled rice','plain rice','steamed rice'],cal:130,pro:2.7,carb:28,fat:0.3,fib:0.4},
+  {k:['brown rice','whole grain rice'],cal:123,pro:2.6,carb:25,fat:0.9,fib:1.8},
+  {k:['oats','rolled oats','oatmeal','overnight oats'],cal:389,pro:17,carb:66,fat:7,fib:10.6},
+  {k:['chapati','roti','phulka','wheat roti'],cal:297,pro:9,carb:55,fat:5,fib:4},
+  {k:['paratha','plain paratha'],cal:300,pro:7,carb:40,fat:12,fib:2.5},
+  {k:['aloo paratha','stuffed paratha','potato paratha'],cal:320,pro:7,carb:42,fat:13,fib:3},
+  {k:['naan','butter naan'],cal:310,pro:9,carb:50,fat:8,fib:2},
+  {k:['bread','white bread','sandwich bread'],cal:265,pro:9,carb:49,fat:3.2,fib:2.7},
+  {k:['brown bread','whole wheat bread','multigrain bread'],cal:247,pro:13,carb:41,fat:4.2,fib:6.8},
+  {k:['idli'],cal:58,pro:2,carb:12,fat:0.2,fib:0.5},
+  {k:['dosa','plain dosa','masala dosa'],cal:168,pro:3.6,carb:26,fat:5.3,fib:0.8},
+  {k:['uttapam'],cal:180,pro:5,carb:30,fat:5,fib:2},
+  {k:['poha','flattened rice','beaten rice'],cal:333,pro:6.5,carb:73,fat:0.7,fib:1.5},
+  {k:['upma'],cal:140,pro:3,carb:22,fat:4.5,fib:2},
+  {k:['pongal','ven pongal'],cal:160,pro:5,carb:28,fat:4,fib:2},
+  {k:['biryani','veg biryani','vegetable biryani'],cal:140,pro:4,carb:25,fat:4,fib:2},
+  {k:['mutton biryani','lamb biryani'],cal:180,pro:10,carb:22,fat:6,fib:1},
+  {k:['khichdi'],cal:124,pro:4.5,carb:22,fat:2.5,fib:2},
+  {k:['pulao','pilaf','veg pulao'],cal:150,pro:3.5,carb:28,fat:3.5,fib:1},
+  {k:['fried rice','veg fried rice'],cal:163,pro:4.5,carb:28,fat:4.2,fib:1.2},
+  {k:['curd rice','yogurt rice','dahi rice'],cal:110,pro:3.5,carb:20,fat:2,fib:0.5},
+  {k:['pasta','spaghetti','macaroni','penne','noodles'],cal:131,pro:5,carb:25,fat:1.1,fib:1.8},
+  {k:['quinoa'],cal:120,pro:4.4,carb:21,fat:1.9,fib:2.8},
+
+  // DAL & PULSES
+  {k:['dal','lentils','toor dal','masoor dal','dal tadka','yellow dal','dal fry'],cal:116,pro:9,carb:20,fat:0.4,fib:8},
+  {k:['dal makhani','black dal'],cal:130,pro:7,carb:15,fat:5,fib:4},
+  {k:['moong dal','mung bean','green gram'],cal:105,pro:7,carb:19,fat:0.4,fib:7.6},
+  {k:['rajma','kidney beans','rajma curry','rajma masala'],cal:130,pro:7,carb:20,fat:3,fib:6},
+  {k:['chole','chana','chickpeas','chole masala','chana masala'],cal:150,pro:8,carb:22,fat:4,fib:7},
+  {k:['black beans','black gram'],cal:132,pro:8.9,carb:23.7,fat:0.5,fib:8.7},
+  {k:['soybean','soya'],cal:446,pro:36,carb:30,fat:20,fib:9},
+  {k:['tofu','soya tofu'],cal:76,pro:8,carb:1.9,fat:4.8,fib:0.3},
+
+  // PANEER DISHES
+  {k:['palak paneer','saag paneer'],cal:160,pro:8,carb:7,fat:11,fib:3},
+  {k:['paneer butter masala','paneer makhani'],cal:200,pro:9,carb:10,fat:14,fib:1.5},
+  {k:['shahi paneer'],cal:220,pro:9,carb:8,fat:17,fib:1},
+  {k:['matar paneer','peas paneer'],cal:160,pro:8,carb:12,fat:9,fib:3},
+  {k:['kadai paneer'],cal:185,pro:10,carb:8,fat:13,fib:2},
+
+  // VEGETABLES
+  {k:['potato','aloo','boiled potato'],cal:77,pro:2,carb:17,fat:0.1,fib:2.2},
+  {k:['sweet potato','shakarkand','boiled sweet potato'],cal:86,pro:1.6,carb:20,fat:0.1,fib:3},
+  {k:['spinach','palak','baby spinach'],cal:23,pro:2.9,carb:3.6,fat:0.4,fib:2.2},
+  {k:['broccoli'],cal:34,pro:2.8,carb:7,fat:0.4,fib:2.6},
+  {k:['cauliflower','gobi','phool gobi'],cal:25,pro:1.9,carb:5,fat:0.3,fib:2},
+  {k:['carrot','gajar'],cal:41,pro:0.9,carb:9.6,fat:0.2,fib:2.8},
+  {k:['cucumber','kheera','keera'],cal:16,pro:0.7,carb:3.6,fat:0.1,fib:0.5},
+  {k:['tomato','tamatar'],cal:18,pro:0.9,carb:3.9,fat:0.2,fib:1.2},
+  {k:['onion','pyaz'],cal:40,pro:1.1,carb:9.3,fat:0.1,fib:1.7},
+  {k:['capsicum','bell pepper','shimla mirch'],cal:31,pro:1,carb:6,fat:0.3,fib:2.1},
+  {k:['cabbage','patta gobi','band gobi'],cal:25,pro:1.3,carb:5.8,fat:0.1,fib:2.5},
+  {k:['mushroom','button mushroom'],cal:22,pro:3.1,carb:3.3,fat:0.3,fib:1},
+  {k:['peas','matar','green peas'],cal:81,pro:5.4,carb:14,fat:0.4,fib:5.1},
+  {k:['bhindi','okra','ladies finger'],cal:33,pro:2,carb:7,fat:0.2,fib:3.2},
+  {k:['baingan','brinjal','eggplant','aubergine'],cal:25,pro:1,carb:5.9,fat:0.2,fib:3},
+  {k:['beetroot','beet'],cal:43,pro:1.6,carb:10,fat:0.2,fib:2.8},
+  {k:['radish','mooli'],cal:16,pro:0.7,carb:3.4,fat:0.1,fib:1.6},
+  {k:['karela','bitter gourd'],cal:17,pro:1,carb:3.7,fat:0.2,fib:2.6},
+  {k:['lauki','bottle gourd','dudhi'],cal:14,pro:0.6,carb:3.4,fat:0,fib:0.5},
+  {k:['corn','sweet corn','maize'],cal:86,pro:3.2,carb:19,fat:1.2,fib:2},
+  {k:['kale'],cal:49,pro:4.3,carb:8.8,fat:0.9,fib:3.6},
+  {k:['lettuce','salad leaves'],cal:15,pro:1.4,carb:2.9,fat:0.2,fib:1.3},
+  {k:['zucchini','courgette'],cal:17,pro:1.2,carb:3.1,fat:0.3,fib:1},
+  {k:['french beans','green beans','string beans'],cal:31,pro:1.8,carb:7,fat:0.1,fib:2.7},
+  {k:['garlic','lahsun'],cal:149,pro:6.4,carb:33,fat:0.5,fib:2.1},
+  {k:['ginger','adrak'],cal:80,pro:1.8,carb:18,fat:0.8,fib:2},
+
+  // FRUITS
+  {k:['banana','kela','plantain'],cal:89,pro:1.1,carb:23,fat:0.3,fib:2.6},
+  {k:['apple','seb'],cal:52,pro:0.3,carb:14,fat:0.2,fib:2.4},
+  {k:['mango','aam','alphonso'],cal:60,pro:0.8,carb:15,fat:0.4,fib:1.6},
+  {k:['orange','santra','mosambi','sweet lime'],cal:47,pro:0.9,carb:12,fat:0.1,fib:2.4},
+  {k:['guava','amrood'],cal:68,pro:2.6,carb:14,fat:1,fib:5.4},
+  {k:['watermelon','tarbooz'],cal:30,pro:0.6,carb:7.6,fat:0.2,fib:0.4},
+  {k:['papaya','papita'],cal:43,pro:0.5,carb:11,fat:0.3,fib:1.7},
+  {k:['grapes','angoor'],cal:69,pro:0.7,carb:18,fat:0.2,fib:0.9},
+  {k:['pomegranate','anar'],cal:83,pro:1.7,carb:19,fat:1.2,fib:4},
+  {k:['pineapple','ananas'],cal:50,pro:0.5,carb:13,fat:0.1,fib:1.4},
+  {k:['strawberry'],cal:32,pro:0.7,carb:7.7,fat:0.3,fib:2},
+  {k:['blueberry','blueberries'],cal:57,pro:0.7,carb:14,fat:0.3,fib:2.4},
+  {k:['kiwi'],cal:61,pro:1.1,carb:15,fat:0.5,fib:3},
+  {k:['avocado'],cal:160,pro:2,carb:9,fat:15,fib:7},
+  {k:['dates','khajoor'],cal:277,pro:1.8,carb:75,fat:0.2,fib:6.7},
+  {k:['raisins','kishmish','dried grapes'],cal:299,pro:3.1,carb:79,fat:0.5,fib:3.7},
+  {k:['coconut water','nariyal pani'],cal:19,pro:0.7,carb:3.7,fat:0.2,fib:1.1},
+  {k:['coconut','nariyal','fresh coconut'],cal:354,pro:3.3,carb:15,fat:33,fib:9},
+  {k:['lemon','nimbu'],cal:29,pro:1.1,carb:9.3,fat:0.3,fib:2.8},
+
+  // NUTS & SEEDS
+  {k:['almonds','badam','almond'],cal:579,pro:21,carb:22,fat:50,fib:12.5},
+  {k:['walnuts','akhrot','walnut'],cal:654,pro:15,carb:14,fat:65,fib:6.7},
+  {k:['cashews','kaju','cashew'],cal:553,pro:18,carb:30,fat:44,fib:3.3},
+  {k:['peanuts','moongfali','groundnuts','peanut'],cal:567,pro:26,carb:16,fat:49,fib:8.5},
+  {k:['pistachios','pista','pistachio'],cal:562,pro:20,carb:28,fat:45,fib:10},
+  {k:['pumpkin seeds','pepitas'],cal:559,pro:30,carb:11,fat:49,fib:6},
+  {k:['sunflower seeds'],cal:584,pro:21,carb:20,fat:51,fib:8.6},
+  {k:['chia seeds'],cal:486,pro:17,carb:42,fat:31,fib:34},
+  {k:['flax seeds','linseed','alsi'],cal:534,pro:18,carb:29,fat:42,fib:27},
+  {k:['sesame seeds','til'],cal:573,pro:17,carb:23,fat:50,fib:11.8},
+
+  // STREET FOOD & SNACKS
+  {k:['samosa'],cal:262,pro:4,carb:28,fat:15,fib:2},
+  {k:['vada pav'],cal:280,pro:6,carb:40,fat:11,fib:2},
+  {k:['pav bhaji'],cal:220,pro:5,carb:32,fat:9,fib:3},
+  {k:['momos','momo','dumpling','dumplings'],cal:170,pro:8,carb:25,fat:4,fib:1.5},
+  {k:['pakora','bhajiya','fritters','onion bhajiya'],cal:280,pro:6,carb:30,fat:15,fib:2},
+  {k:['dhokla'],cal:160,pro:5,carb:28,fat:3,fib:1.5},
+  {k:['medu vada','urad vada'],cal:220,pro:7,carb:28,fat:9,fib:2},
+  {k:['kachori'],cal:350,pro:7,carb:42,fat:17,fib:3},
+  {k:['bhel puri'],cal:180,pro:4,carb:30,fat:5,fib:2},
+  {k:['pani puri','gol gappa','puchka'],cal:200,pro:4,carb:32,fat:6,fib:2},
+  {k:['chole bhature'],cal:480,pro:14,carb:65,fat:18,fib:6},
+
+  // FAST FOOD
+  {k:['burger','hamburger','veggie burger'],cal:295,pro:14,carb:34,fat:12,fib:2},
+  {k:['pizza'],cal:266,pro:11,carb:33,fat:10,fib:2},
+  {k:['french fries','fries','chips'],cal:312,pro:3.4,carb:41,fat:15,fib:3.8},
+  {k:['sandwich'],cal:220,pro:8,carb:30,fat:8,fib:2},
+  {k:['roll','kathi roll','frankie','wrap'],cal:280,pro:10,carb:40,fat:9,fib:2},
+
+  // SWEETS & DESSERTS
+  {k:['gulab jamun'],cal:380,pro:6,carb:55,fat:15,fib:0.5},
+  {k:['halwa','suji halwa','semolina halwa'],cal:300,pro:4,carb:45,fat:12,fib:1.5},
+  {k:['gajar halwa','carrot halwa'],cal:250,pro:4,carb:38,fat:10,fib:2},
+  {k:['ladoo','laddoo'],cal:450,pro:7,carb:60,fat:20,fib:2},
+  {k:['barfi','burfi'],cal:420,pro:8,carb:55,fat:18,fib:0.5},
+  {k:['rasgulla'],cal:186,pro:4,carb:37,fat:2,fib:0},
+  {k:['jalebi'],cal:360,pro:2,carb:65,fat:10,fib:0.2},
+  {k:['kheer','rice pudding','payasam'],cal:150,pro:4,carb:26,fat:4,fib:0.2},
+  {k:['ice cream','kulfi'],cal:207,pro:3.5,carb:24,fat:11,fib:0},
+  {k:['dark chocolate'],cal:546,pro:5,carb:60,fat:31,fib:7},
+  {k:['milk chocolate','chocolate'],cal:535,pro:7.7,carb:59,fat:30,fib:2},
+  {k:['biscuit','cookie','cracker'],cal:450,pro:6,carb:68,fat:18,fib:1.5},
+
+  // PEANUT BUTTER & OILS
+  {k:['peanut butter'],cal:588,pro:25,carb:20,fat:50,fib:6},
+  {k:['olive oil'],cal:884,pro:0,carb:0,fat:100,fib:0},
+  {k:['coconut oil'],cal:862,pro:0,carb:0,fat:100,fib:0},
+  {k:['mustard oil','sarson tel'],cal:884,pro:0,carb:0,fat:100,fib:0},
+  {k:['vegetable oil','sunflower oil','refined oil'],cal:884,pro:0,carb:0,fat:100,fib:0},
+
+  // DRINKS
+  {k:['lassi','sweet lassi'],cal:80,pro:3,carb:13,fat:2,fib:0},
+  {k:['buttermilk','chaas','masala chaas'],cal:40,pro:3,carb:5,fat:1,fib:0},
+  {k:['green tea'],cal:1,pro:0,carb:0,fat:0,fib:0},
+  {k:['black coffee','coffee'],cal:2,pro:0.3,carb:0,fat:0,fib:0},
+  {k:['orange juice','oj'],cal:45,pro:0.7,carb:10,fat:0.2,fib:0.2},
+  {k:['protein shake'],cal:150,pro:25,carb:8,fat:2,fib:0},
+  {k:['sports drink','electrolyte drink','gatorade'],cal:26,pro:0,carb:6.4,fat:0,fib:0},
+
+  // ══════════════════════════════════════════════
+  // TELUGU FOODS — Complete Andhra & Telangana
+  // ══════════════════════════════════════════════
+
+  // SNACKS & FRITTERS
+  {k:['punugulu','punukulu','punukkulu','punuku'],cal:280,pro:6,carb:32,fat:14,fib:2},
+  {k:['gaarelu','garelu','medu vada','urad vada','minapappu vada'],cal:220,pro:7,carb:28,fat:9,fib:2},
+  {k:['burelu','boorelu','booreelu','poornam burelu'],cal:320,pro:6,carb:52,fat:9,fib:2},
+  {k:['ariselu','arisa','rice sweet'],cal:380,pro:4,carb:65,fat:11,fib:1},
+  {k:['chegodilu','chegodi','chakli','murukku'],cal:490,pro:7,carb:60,fat:24,fib:3},
+  {k:['janthikalu','jantikalu','omapodi'],cal:500,pro:8,carb:58,fat:26,fib:3},
+  {k:['ribbon pakodu','ribbon pakoda'],cal:480,pro:7,carb:57,fat:24,fib:3},
+  {k:['mixture','farsan','namkeen'],cal:460,pro:9,carb:52,fat:23,fib:4},
+  {k:['kara sev','karasev'],cal:490,pro:9,carb:55,fat:26,fib:3},
+  {k:['murukku','muruku'],cal:490,pro:7,carb:60,fat:24,fib:3},
+  {k:['bobbatlu','bobbattu','puran poli','holige'],cal:310,pro:7,carb:55,fat:7,fib:3},
+  {k:['attu','atta','pesarattu','moong dal dosa'],cal:160,pro:8,carb:26,fat:3,fib:4},
+  {k:['dibba rotti','dibbarotti','thick roti','corn roti'],cal:190,pro:5,carb:35,fat:3,fib:2},
+  {k:['pappu chekkalu','pappu chakralu'],cal:440,pro:10,carb:55,fat:20,fib:4},
+
+  // SWEETS & DESSERTS
+  {k:['badhusha','badusha','balushahi'],cal:440,pro:4,carb:58,fat:21,fib:0.5},
+  {k:['laddu','laddoo','ladoo','rava laddu','besan laddu','boondi laddu','motichoor laddu'],cal:450,pro:7,carb:60,fat:20,fib:2},
+  {k:['payasam','paayasam','kheer','rice payasam','semiya payasam'],cal:150,pro:4,carb:26,fat:4,fib:0.2},
+  {k:['semiya payasam','vermicelli payasam','semige payasam'],cal:165,pro:4.5,carb:28,fat:4.5,fib:0.5},
+  {k:['pala payasam','milk payasam'],cal:160,pro:5,carb:25,fat:5,fib:0},
+  {k:['paramannam','paramanam','rice kheer'],cal:155,pro:4,carb:27,fat:4,fib:0.2},
+  {k:['pongali','pongal sweet','sakkarai pongal','sweet pongal'],cal:200,pro:4,carb:38,fat:5,fib:1},
+  {k:['kajjikayalu','kajjikaya','half moon sweet','karanji'],cal:380,pro:6,carb:52,fat:17,fib:2},
+  {k:['gavvalu','fried sweet shells'],cal:410,pro:5,carb:58,fat:18,fib:1},
+  {k:['teepi gavvalu','sweet gavvalu'],cal:420,pro:5,carb:60,fat:18,fib:1},
+  {k:['pootharekulu','poothareklu','paper sweet','andhra sweet'],cal:350,pro:5,carb:60,fat:10,fib:0.5},
+  {k:['halwa','sooji halwa','rava halwa','suji halwa'],cal:300,pro:4,carb:45,fat:12,fib:1.5},
+  {k:['carrot halwa','gajar halwa','carrot payasam'],cal:250,pro:4,carb:38,fat:10,fib:2},
+  {k:['double ka meetha','bread halwa','shahi tukda'],cal:380,pro:8,carb:52,fat:16,fib:0.5},
+  {k:['qubani ka meetha','apricot sweet'],cal:180,pro:2,carb:38,fat:3,fib:3},
+  {k:['rasmalai'],cal:200,pro:7,carb:22,fat:9,fib:0},
+  {k:['gulab jamun'],cal:380,pro:6,carb:55,fat:15,fib:0.5},
+  {k:['jilebi','jalebi','jilapi'],cal:360,pro:2,carb:65,fat:10,fib:0.2},
+  {k:['mysore pak','mysurpa'],cal:520,pro:7,carb:55,fat:30,fib:1},
+  {k:['kaju katli','cashew barfi','kaju barfi'],cal:480,pro:9,carb:52,fat:27,fib:1},
+  {k:['barfi','burfi','milk barfi'],cal:420,pro:8,carb:55,fat:18,fib:0.5},
+  {k:['pesarapappu payasam','moong dal payasam'],cal:175,pro:6,carb:30,fat:4,fib:3},
+  {k:['chakkara pongali','chakkera pongali'],cal:200,pro:4,carb:38,fat:5,fib:1},
+
+  // RICE DISHES — TELUGU
+  {k:['pulihora','puliyodarai','tamarind rice','chitrannam','chintapandu annam'],cal:180,pro:3.5,carb:34,fat:5,fib:2},
+  {k:['kobbari annam','coconut rice','thengai sadam'],cal:190,pro:3,carb:34,fat:6,fib:1.5},
+  {k:['nimmakaya annam','lemon rice','chitranna'],cal:175,pro:3,carb:33,fat:5,fib:1},
+  {k:['dappalam','dal rice andhra'],cal:140,pro:5,carb:24,fat:3,fib:3},
+  {k:['vangi bath','brinjal rice'],cal:170,pro:3.5,carb:30,fat:5,fib:3},
+  {k:['pesarannam','moong dal rice','pongal'],cal:155,pro:6,carb:27,fat:3,fib:3},
+  {k:['mamidikaya annam','raw mango rice'],cal:175,pro:3,carb:34,fat:4.5,fib:1.5},
+  {k:['curd rice','perugu annam','daddojanam'],cal:110,pro:3.5,carb:20,fat:2,fib:0.5},
+  {k:['tomato rice','tomato bath'],cal:165,pro:3.5,carb:30,fat:4,fib:2},
+  {k:['bisi bele bath','bisi bele bhath'],cal:160,pro:5,carb:28,fat:4,fib:3},
+
+  // BREADS & ROTIS
+  {k:['jonna roti','jowar roti','sorghum roti','jwari bhakri'],cal:175,pro:5,carb:35,fat:2,fib:5},
+  {k:['sajja roti','bajra roti','pearl millet roti','bajri bhakri'],cal:180,pro:5,carb:36,fat:2,fib:5},
+  {k:['ragi roti','finger millet roti','nachni roti'],cal:170,pro:4,carb:34,fat:1.5,fib:6},
+  {k:['akki rotti','rice rotti','rice bread'],cal:185,pro:3.5,carb:38,fat:2,fib:1.5},
+
+  // CURRIES & GRAVIES — ANDHRA / TELANGANA
+  {k:['gongura mutton','gongura meat','sorrel mutton'],cal:220,pro:22,carb:5,fat:13,fib:1.5},
+  {k:['gongura chicken','gongura kodi'],cal:190,pro:20,carb:5,fat:10,fib:1.5},
+  {k:['gongura pappu','sorrel dal','gongura dal'],cal:120,pro:7,carb:14,fat:4,fib:5},
+  {k:['gongura','sorrel leaves','gongura pickle'],cal:25,pro:2,carb:4,fat:0.3,fib:2},
+  {k:['gutti vankaya','stuffed brinjal','gutti vankaya kura'],cal:120,pro:3,carb:10,fat:8,fib:4},
+  {k:['vankaya kura','brinjal curry','baingan curry'],cal:95,pro:2.5,carb:10,fat:5,fib:4},
+  {k:['munakkaya kura','drumstick curry','moringa curry'],cal:75,pro:2.5,carb:9,fat:3.5,fib:3},
+  {k:['bendakaya kura','okra curry','bhindi curry'],cal:80,pro:2,carb:9,fat:4,fib:3},
+  {k:['aratikaya kura','raw banana curry','plantain curry'],cal:110,pro:2,carb:18,fat:4,fib:3},
+  {k:['kakarakaya kura','bitter gourd curry','karela curry'],cal:70,pro:1.5,carb:8,fat:3.5,fib:3},
+  {k:['dondakaya kura','ivy gourd curry','tindora curry'],cal:65,pro:1.5,carb:8,fat:3,fib:2.5},
+  {k:['chikkudukaya kura','broad beans curry','field beans'],cal:85,pro:4,carb:12,fat:3,fib:5},
+  {k:['avakaya','mango pickle','aam ka achaar'],cal:70,pro:1,carb:8,fat:4,fib:1},
+  {k:['mamidikaya pappu','raw mango dal'],cal:120,pro:6,carb:18,fat:3,fib:4},
+  {k:['tomato pappu','tomato dal'],cal:110,pro:6,carb:16,fat:3,fib:3.5},
+  {k:['palakura pappu','spinach dal'],cal:115,pro:7,carb:15,fat:3,fib:4},
+  {k:['pappu','andhra dal','telugu dal'],cal:116,pro:9,carb:20,fat:0.4,fib:8},
+  {k:['charu','rasam','pepper rasam','tomato rasam'],cal:35,pro:1.5,carb:6,fat:0.8,fib:1},
+  {k:['mudda pappu','plain dal'],cal:116,pro:9,carb:20,fat:0.4,fib:8},
+  {k:['koora','veg curry','andhra curry'],cal:80,pro:2.5,carb:10,fat:4,fib:2.5},
+  {k:['kodi kura','chicken curry andhra','andhra chicken'],cal:175,pro:19,carb:6,fat:9,fib:1.2},
+  {k:['royyala kura','prawn curry','shrimp curry'],cal:130,pro:18,carb:5,fat:5,fib:1},
+  {k:['chepala pulusu','fish curry andhra','fish pulusu'],cal:145,pro:19,carb:6,fat:6,fib:1},
+  {k:['pulusu','tamarind curry','andhra pulusu'],cal:90,pro:3,carb:12,fat:4,fib:2},
+  {k:['pesarapappu kura','moong dal curry'],cal:115,pro:7,carb:16,fat:3,fib:4},
+  {k:['senagapappu kura','chana dal curry'],cal:130,pro:7,carb:18,fat:4,fib:5},
+
+  // FRUITS — TELUGU NAMES
+  {k:['panasakai','panasa','jackfruit','kathal'],cal:95,pro:1.7,carb:23,fat:0.6,fib:1.5},
+  {k:['mamidi','mango','aam','alphanso'],cal:60,pro:0.8,carb:15,fat:0.4,fib:1.6},
+  {k:['boodida mamidi','ripe mango'],cal:65,pro:0.8,carb:17,fat:0.4,fib:1.8},
+  {k:['kobbari','coconut','nariyal'],cal:354,pro:3.3,carb:15,fat:33,fib:9},
+  {k:['arati','banana','plantain','kela'],cal:89,pro:1.1,carb:23,fat:0.3,fib:2.6},
+  {k:['seetha phalam','custard apple','sitaphal','sharifa'],cal:94,pro:1.7,carb:23.6,fat:0.4,fib:3},
+  {k:['jamakaya','rose apple','jambu'],cal:25,pro:0.6,carb:5.7,fat:0.3,fib:1.2},
+  {k:['regi pandu','jujube','ber','ziziphus'],cal:79,pro:1.2,carb:20,fat:0.2,fib:3},
+  {k:['neredu','jamun','java plum','black plum'],cal:60,pro:0.7,carb:14,fat:0.2,fib:0.6},
+  {k:['velaga pandu','wood apple','kavath'],cal:134,pro:7.1,carb:18,fat:3.7,fib:5},
+  {k:['raavi pandu','fig','anjeer'],cal:74,pro:0.8,carb:19,fat:0.3,fib:3},
+  {k:['draksha','grapes','angur'],cal:69,pro:0.7,carb:18,fat:0.2,fib:0.9},
+  {k:['nimma','lemon','nimbu'],cal:29,pro:1.1,carb:9.3,fat:0.3,fib:2.8},
+
+  // BREAKFAST ITEMS — TELUGU
+  {k:['upma','uppumav','uppuma'],cal:140,pro:3,carb:22,fat:4.5,fib:2},
+  {k:['rava upma','sooji upma','semolina upma'],cal:145,pro:3.5,carb:23,fat:5,fib:2},
+  {k:['pesarattu','green moong dosa','mung dosa'],cal:160,pro:8,carb:26,fat:3,fib:4},
+  {k:['attu','dosa','plain dosa'],cal:168,pro:3.6,carb:26,fat:5.3,fib:0.8},
+  {k:['idli','idly'],cal:58,pro:2,carb:12,fat:0.2,fib:0.5},
+  {k:['vada','medu vada','wada'],cal:220,pro:7,carb:28,fat:9,fib:2},
+  {k:['uttapam','uttappam'],cal:180,pro:5,carb:30,fat:5,fib:2},
+  {k:['rava dosa','sooji dosa','semolina dosa'],cal:190,pro:4.5,carb:30,fat:6,fib:1.5},
+  {k:['set dosa','sponge dosa'],cal:175,pro:4,carb:28,fat:5,fib:1.5},
+  {k:['masala dosa'],cal:190,pro:4.5,carb:30,fat:7,fib:2},
+  {k:['neyyi attu','ghee dosa','butter dosa'],cal:225,pro:4,carb:27,fat:11,fib:1},
+
+  // CONDIMENTS / PICKLES — TELUGU
+  {k:['avakaya','raw mango pickle','mango pickle'],cal:70,pro:1,carb:8,fat:4,fib:1},
+  {k:['gongura pachadi','sorrel chutney'],cal:45,pro:2,carb:6,fat:2,fib:2.5},
+  {k:['allam pachadi','ginger chutney'],cal:80,pro:2,carb:12,fat:3,fib:2},
+  {k:['tomato pachadi','tomato chutney'],cal:60,pro:1.5,carb:8,fat:2.5,fib:2},
+  {k:['kobbari pachadi','coconut chutney'],cal:180,pro:2,carb:8,fat:16,fib:4},
+  {k:['palli chutney','peanut chutney','groundnut chutney'],cal:210,pro:8,carb:10,fat:16,fib:4},
+  {k:['perugu','curd','dahi','yogurt'],cal:60,pro:3.5,carb:4,fat:3,fib:0},
+  {k:['majjiga','buttermilk','chaas'],cal:40,pro:3,carb:5,fat:1,fib:0},
+  {k:['neyyi','ghee','clarified butter'],cal:900,pro:0,carb:0,fat:100,fib:0},
+  {k:['nuvvula nూne','sesame oil'],cal:884,pro:0,carb:0,fat:100,fib:0},
+
+  // ANDHRA BIRYANI & SPECIAL DISHES
+  {k:['andhra biryani','hyderabadi biryani','dum biryani'],cal:180,pro:9.5,carb:22,fat:6,fib:1.2},
+  {k:['kodi biryani','chicken biryani andhra'],cal:175,pro:9.5,carb:22,fat:5.5,fib:1.2},
+  {k:['mutton biryani','goat biryani','mamsam biryani'],cal:185,pro:11,carb:21,fat:7,fib:1},
+  {k:['egg biryani','guddu biryani'],cal:165,pro:8,carb:22,fat:5,fib:1},
+  {k:['haleem','halim','keema porridge'],cal:230,pro:15,carb:18,fat:10,fib:2},
+  {k:['paya','trotters','paya soup'],cal:160,pro:18,carb:2,fat:9,fib:0},
+  {k:['nihari','nalli nihari'],cal:220,pro:18,carb:5,fat:14,fib:0.5},
+
+  // CONDIMENTS
+  {k:['honey','shahad'],cal:304,pro:0.3,carb:82,fat:0,fib:0.2},
+  {k:['jaggery','gur'],cal:383,pro:0.4,carb:98,fat:0.1,fib:0},
+  {k:['sugar'],cal:387,pro:0,carb:100,fat:0,fib:0},
+  {k:['curry','sabzi','gravy','mixed curry'],cal:80,pro:3,carb:10,fat:4,fib:2},
+  {k:['sambar'],cal:55,pro:3,carb:9,fat:1,fib:3},
+];
+
+// Serving sizes (when user says "1 dosa", "2 eggs" etc)
+const SERVINGS = {
+  'egg':60,'eggs':60,'whole egg':60,'boiled egg':60,
+  'dosa':120,'idli':40,'chapati':40,'roti':40,'paratha':80,
+  'naan':90,'puri':40,'bhatura':80,
+  'samosa':80,'gulab jamun':45,'ladoo':50,'rasgulla':70,
+  'banana':120,'apple':182,'orange':130,'mango':150,'papaya':200,
+  'watermelon':250,'guava':100,'kiwi':70,
+  'burger':150,'momos':15,'dumpling':15,
+  'biscuit':10,'cookie':12,
+  'date':24,'raisin':0.5,
+  'punugulu':8,'gaarelu':40,'garelu':40,'burelu':45,'attu':120,'idli':40,'vada':40,
+  'laddu':50,'ladoo':50,'laddoo':50,'badhusha':45,'bobbatlu':60,'ariselu':25,
+  'gavvalu':15,'kajjikaya':40,'jilebi':30,'jalebi':30,'gulab jamun':45,
+  'mysore pak':35,'panasakai':200,'panasa':200,'seetha phalam':150,
+  'almond':1.2,'badam':1.2,'cashew':1.5,'walnut':4,'peanut':0.6,
+  'pistachio':0.9,'pista':0.9,
+};
+
+// ════════════════════════════════════════════
+// SMART PARSER — handles any natural language
+// ════════════════════════════════════════════
+function parseInput(text) {
+  if(!text.trim()) return [];
+  
+  // Split by comma or newline
+  const parts = text.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
+  const results = [];
+
+  for(const part of parts) {
+    const lower = part.toLowerCase().trim();
+    
+    // ── EXTRACT QUANTITY ──────────────────────────────
+    let qty = null;
+    let foodText = lower;
+
+    // Patterns: "100g chicken", "chicken 100g", "2 dosas", "1 scoop whey", "half cup oats"
+    const patterns = [
+      // number + unit + food  OR  food + number + unit
+      /(\d+(?:\.\d+)?)\s*(kg|kgs|gram|grams|gm|gms|g|ml|milliliter|liter|litre|l|piece|pieces|pcs|pc|scoop|scoops|cup|cups|tbsp|tsp|tablespoon|teaspoon|slice|slices|bowl|bowls|plate|plates|serving|servings)?/i,
+    ];
+
+    // Try to find a number in the text
+    const numMatch = lower.match(/(\d+(?:\.\d+)?)\s*(kg|kgs|gram|grams|gm|gms|g|ml|liter|litre|l|piece|pieces|pcs|pc|scoop|scoops|cup|cups|tbsp|tsp|tablespoon|teaspoon|slice|slices|bowl|bowls|plate|plates)?/i);
+    
+    if(numMatch) {
+      const num = parseFloat(numMatch[1]);
+      const unit = (numMatch[2]||'').toLowerCase();
+
+      if(unit === 'kg' || unit === 'kgs') {
+        qty = num * 1000;
+      } else if(unit === 'l' || unit === 'liter' || unit === 'litre') {
+        qty = num * 1000;
+      } else if(unit === 'tbsp' || unit === 'tablespoon') {
+        qty = num * 15;
+      } else if(unit === 'tsp' || unit === 'teaspoon') {
+        qty = num * 5;
+      } else if(unit === 'cup' || unit === 'cups') {
+        qty = num * 240;
+      } else if(unit === 'scoop' || unit === 'scoops') {
+        qty = num * 30; // 1 scoop = 30g (standard protein scoop)
+      } else if(unit === 'slice' || unit === 'slices') {
+        qty = num * 30;
+      } else if(unit === 'bowl' || unit === 'bowls') {
+        qty = num * 200;
+      } else if(unit === 'plate' || unit === 'plates') {
+        qty = num * 300;
+      } else if(unit === 'piece' || unit === 'pieces' || unit === 'pc' || unit === 'pcs') {
+        // Will resolve by food type below
+        qty = num; // store as count, resolve later
+        foodText = lower.replace(numMatch[0],'').trim();
+        // Look up serving size for this food
+        for(const [sKey, sGram] of Object.entries(SERVINGS)) {
+          if(foodText.includes(sKey)) { qty = num * sGram; break; }
+        }
+        if(qty === num) qty = num * 100; // fallback: 100g per piece
+      } else if(unit === 'g' || unit === 'gm' || unit === 'gms' || unit === 'gram' || unit === 'grams' || unit === 'ml' || unit === 'milliliter') {
+        qty = num;
+      } else {
+        // No unit — check if it's a countable food
+        // e.g. "2 dosas", "3 eggs", "1 banana"
+        foodText = lower.replace(numMatch[0],'').trim();
+        let foundServing = false;
+        for(const [sKey, sGram] of Object.entries(SERVINGS)) {
+          if(foodText.includes(sKey) || lower.includes(sKey)) {
+            qty = num * sGram;
+            foundServing = true;
+            break;
+          }
+        }
+        if(!foundServing) {
+          // Could be grams without unit — if number > 10, treat as grams
+          qty = num >= 10 ? num : num * 100;
+        }
+      }
+    }
+
+    if(!qty || qty <= 0) qty = 100; // default 100g
+
+    // ── FIND FOOD IN DATABASE ──────────────────────────
+    // Remove numbers and units from food text for matching
+    foodText = lower
+      .replace(/\d+(?:\.\d+)?\s*(kg|kgs|gram|grams|gm|gms|g|ml|liter|litre|l|piece|pieces|pcs|pc|scoop|scoops|cup|cups|tbsp|tsp|tablespoon|teaspoon|slice|slices|bowl|bowls|plate|plates|serving|servings)?/gi, '')
+      .replace(/\s+/g,' ').trim();
+
+    if(!foodText) foodText = lower;
+
+    let bestMatch = null;
+    let bestScore = 0;
+
+    for(const food of DB) {
+      for(const keyword of food.k) {
+        // Check if keyword appears in food text OR food text appears in keyword
+        if(foodText.includes(keyword) || keyword.includes(foodText)) {
+          const score = keyword.length + (foodText === keyword ? 100 : 0);
+          if(score > bestScore) { bestScore = score; bestMatch = food; }
+        }
+        // Partial word match — check each word
+        const words = foodText.split(' ').filter(w=>w.length>2);
+        for(const word of words) {
+          if(keyword.includes(word) || word.includes(keyword.split(' ')[0])) {
+            const score = word.length * 0.8;
+            if(score > bestScore) { bestScore = score; bestMatch = food; }
+          }
+        }
+      }
+    }
+
+    // If no match found, use a reasonable default
+    if(!bestMatch) {
+      // Try with the original part text
+      const origWords = part.toLowerCase().split(' ').filter(w=>w.length>2);
+      for(const food of DB) {
+        for(const kw of food.k) {
+          for(const word of origWords) {
+            if(kw.includes(word) || word.includes(kw.split(' ')[0])) {
+              if(!bestMatch || kw.length > bestScore) {
+                bestScore = kw.length;
+                bestMatch = food;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Calculate macros
+    const r = qty / 100;
+    results.push({
+      id: Date.now() + Math.random(),
+      input: part.trim(),
+      name: part.trim(),
+      qty: qty,
+      matched: bestMatch ? true : false,
+      cal:  bestMatch ? r2(bestMatch.cal  * r) : 0,
+      pro:  bestMatch ? r2(bestMatch.pro  * r) : 0,
+      carb: bestMatch ? r2(bestMatch.carb * r) : 0,
+      fat:  bestMatch ? r2(bestMatch.fat  * r) : 0,
+      fib:  bestMatch ? r2(bestMatch.fib  * r) : 0,
+      _foodName: bestMatch ? bestMatch.k[0] : 'unknown',
+    });
+  }
+
+  return results;
+}
+
+// ════════════════════════════════════════════
+// STATE & MEALS
+// ════════════════════════════════════════════
+const MEALS = [
+  {id:'breakfast', name:'Breakfast', emoji:'🌅'},
+  {id:'lunch',     name:'Lunch',     emoji:'☀️'},
+  {id:'dinner',    name:'Dinner',    emoji:'🌙'},
+  {id:'snacks',    name:'Snacks',    emoji:'🍎'},
+];
+
+let mealData = JSON.parse(localStorage.getItem('mtp_data')||'null') || {breakfast:[],lunch:[],dinner:[],snacks:[]};
+let goals    = JSON.parse(localStorage.getItem('mtp_goals')||'null') || {cal:1800,pro:150,carb:150,fat:62,fib:25};
+
+// Init
+document.getElementById('dateEl').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+setGoalInputs();
+buildMeals();
+renderAll();
+
+function buildMeals(){
+  document.getElementById('mealsContainer').innerHTML = MEALS.map(m=>`
+    <div class="meal-section" id="ms-${m.id}">
+      <div class="meal-header">
+        <div class="meal-emoji">${m.emoji}</div>
+        <div>
+          <div class="meal-title">${m.name}</div>
+          <div class="meal-subtitle">Type food items below → Calculate</div>
+        </div>
+        <div class="meal-kcal empty" id="mk-${m.id}">0 kcal</div>
+      </div>
+
+      <div class="meal-input">
+        <div class="input-label">What did you eat in ${m.name.toLowerCase()}?</div>
+        <textarea class="food-textarea" id="ta-${m.id}"
+          placeholder="Example: rice 200g, chicken breast 150g, 2 whole eggs, papaya 100g, 1 scoop whey&#10;&#10;Type anything — any food, any quantity!"
+          rows="3"></textarea>
+        <div class="input-actions">
+          <div class="input-hint">
+            Type in <b>any format</b>: "chicken 200g", "2 dosas", "papaya 100 grams", "1 scoop whey"
+          </div>
+          <button class="calc-btn" onclick="calculate('${m.id}')">
+            ⚡ Calculate
+          </button>
+        </div>
+        <div class="meal-error" id="me-${m.id}" style="display:none"></div>
+      </div>
+
+      <div id="mr-${m.id}"></div>
+    </div>
+  `).join('');
+}
+
+// ── CALCULATE ──────────────────────────────────────
+function calculate(mid) {
+  const ta = document.getElementById('ta-'+mid);
+  const text = ta.value.trim();
+  const errEl = document.getElementById('me-'+mid);
+  errEl.style.display = 'none';
+
+  if(!text) {
+    showErr(mid, 'Please type some food items first!');
+    return;
+  }
+
+  const items = parseInput(text);
+  if(!items.length) {
+    showErr(mid, 'Could not parse any items. Try: "rice 200g, chicken 150g"');
+    return;
+  }
+
+  // Check for unmatched items
+  const unmatched = items.filter(i=>!i.matched).map(i=>i.input);
+
+  // Add to meal data
+  mealData[mid].push(...items);
+  save();
+
+  // Clear textarea
+  ta.value = '';
+  renderAll();
+
+  // Show feedback
+  if(unmatched.length > 0) {
+    showErr(mid, `⚠️ Could not find nutritional data for: ${unmatched.join(', ')}. They were added as 0 calories. Try a more common name.`);
+  }
+
+  const matched = items.filter(i=>i.matched).length;
+  toast(`✅ ${matched} item${matched>1?'s':''} added to ${mid}!`);
+}
+
+function showErr(mid, msg) {
+  const e = document.getElementById('me-'+mid);
+  e.textContent = msg;
+  e.style.display = 'block';
+}
+
+// ── RENDER ─────────────────────────────────────────
+function renderAll() {
+  MEALS.forEach(m => renderMeal(m.id));
+  const tot = dayTotals();
+  renderTotals(tot);
+  renderBars(tot);
+  renderAnalysis(tot);
+}
+
+function renderMeal(mid) {
+  const items = mealData[mid];
+  const resEl = document.getElementById('mr-'+mid);
+  const badge = document.getElementById('mk-'+mid);
+
+  if(!items.length) {
+    resEl.innerHTML = '<div class="no-items">No items added yet</div>';
+    badge.textContent = '0 kcal';
+    badge.className = 'meal-kcal empty';
+    return;
+  }
+
+  const t = mealTotals(mid);
+  badge.textContent = t.cal + ' kcal';
+  badge.className = 'meal-kcal filled';
+
+  resEl.innerHTML = `
+    <table class="food-table">
+      <thead><tr>
+        <th>Food Item</th>
+        <th style="color:var(--cal)">Cal</th>
+        <th style="color:var(--pro)">Protein</th>
+        <th style="color:var(--carb)">Carbs</th>
+        <th style="color:var(--fat)">Fats</th>
+        <th style="color:var(--fib)">Fiber</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+        ${items.map(f=>`
+          <tr>
+            <td>${f.name}</td>
+            <td class="td-cal">${f.cal}</td>
+            <td class="td-pro">${f.pro}g</td>
+            <td class="td-carb">${f.carb}g</td>
+            <td class="td-fat">${f.fat}g</td>
+            <td class="td-fib">${f.fib}g</td>
+            <td><button class="del-btn" onclick="delItem('${mid}',${f.id})">✕</button></td>
+          </tr>
+        `).join('')}
+        <tr class="total-tr">
+          <td style="color:var(--white)">📊 ${mid.charAt(0).toUpperCase()+mid.slice(1)} Total</td>
+          <td class="td-cal">${t.cal}</td>
+          <td class="td-pro">${t.pro}g</td>
+          <td class="td-carb">${t.carb}g</td>
+          <td class="td-fat">${t.fat}g</td>
+          <td class="td-fib">${t.fib}g</td>
+          <td><button class="clear-btn-small" onclick="clearMeal('${mid}')">Clear</button></td>
+        </tr>
+      </tbody>
+    </table>`;
+}
+
+function mealTotals(mid){
+  return mealData[mid].reduce((a,f)=>({
+    cal:r2(a.cal+f.cal),pro:r2(a.pro+f.pro),
+    carb:r2(a.carb+f.carb),fat:r2(a.fat+f.fat),fib:r2(a.fib+f.fib)
+  }),{cal:0,pro:0,carb:0,fat:0,fib:0});
+}
+
+function dayTotals(){
+  return MEALS.reduce((a,m)=>{
+    const t=mealTotals(m.id);
+    return{cal:r2(a.cal+t.cal),pro:r2(a.pro+t.pro),carb:r2(a.carb+t.carb),fat:r2(a.fat+t.fat),fib:r2(a.fib+t.fib)};
+  },{cal:0,pro:0,carb:0,fat:0,fib:0});
+}
+
+function renderTotals(t){
+  const cfg={cal:{u:'kcal',g:goals.cal},pro:{u:'g',g:goals.pro},carb:{u:'g',g:goals.carb},fat:{u:'g',g:goals.fat},fib:{u:'g',g:goals.fib}};
+  Object.entries(cfg).forEach(([k,{u,g}])=>{
+    const val=t[k],diff=r2(val-g);
+    document.getElementById('T-'+k).textContent = k==='cal'?val:val+'g';
+    document.getElementById('TG-'+k).textContent = '/'+g+u;
+    const el=document.getElementById('TD-'+k);
+    if(!val){el.textContent='—';el.className='tot-diff';return;}
+    if(diff>0){el.textContent='+'+diff+u+' over';el.className='tot-diff over';}
+    else if(diff<0){el.textContent=Math.abs(diff)+u+' left';el.className='tot-diff good';}
+    else{el.textContent='✅ Perfect!';el.className='tot-diff good';}
+  });
+}
+
+function renderBars(t){
+  const cfg={cal:goals.cal,pro:goals.pro,carb:goals.carb,fat:goals.fat,fib:goals.fib};
+  Object.entries(cfg).forEach(([k,g])=>{
+    const val=t[k],pct=g?Math.min(Math.round(val/g*100),100):0,raw=g?Math.round(val/g*100):0;
+    document.getElementById('B-'+k).style.width=pct+'%';
+    document.getElementById('BS-'+k).textContent=val+(k==='cal'?' kcal':'g');
+    document.getElementById('BP-'+k).textContent=raw+'%';
+  });
+}
+
+function renderAnalysis(t){
+  const hasFood=MEALS.some(m=>mealData[m.id].length>0);
+  const sec=document.getElementById('analysisSection');
+  if(!hasFood){sec.style.display='none';return;}
+  sec.style.display='block';
+  const good=[],bad=[];let score=10;
+  const pp=t.pro/goals.pro;
+  if(pp>=0.95) good.push('✅ Protein excellent — muscle building supported!');
+  else if(pp>=0.75) good.push('👍 Protein decent — try to reach your goal');
+  else{bad.push('❌ Protein too low — add chicken, eggs, whey or paneer');score-=1.5;}
+  const cd=t.cal-goals.cal;
+  if(Math.abs(cd)<=100) good.push('✅ Calories perfectly on target!');
+  else if(cd>100&&cd<=300){bad.push('⚠️ '+cd+' kcal over — slight surplus');score-=0.8;}
+  else if(cd>300){bad.push('❌ '+cd+' kcal surplus — will impact fat loss');score-=1.5;}
+  else if(cd<-300){bad.push('⚠️ '+Math.abs(cd)+' kcal under — eating too little');score-=1;}
+  const cp=t.carb/goals.carb;
+  if(cp>1.4){bad.push('❌ Carbs very high ('+t.carb+'g) — reduce rice or potato');score-=2;}
+  else if(cp>1.1){bad.push('⚠️ Carbs slightly over ('+t.carb+'g)');score-=0.8;}
+  else if(cp>=0.8) good.push('✅ Carbs well controlled!');
+  else good.push('👍 Carbs under limit — good for fat loss');
+  if(t.fat/goals.fat<=1.05) good.push('✅ Fats within healthy range!');
+  else{bad.push('⚠️ Fats slightly high ('+t.fat+'g)');score-=0.5;}
+  const fp=t.fib/goals.fib;
+  if(fp>=0.8&&fp<=1.3) good.push('✅ Fiber great — gut health optimal!');
+  else if(fp<0.5){bad.push('⚠️ Fiber low — add veggies, fruits or dal');score-=0.5;}
+  score=Math.max(0,Math.min(10,score));
+  document.getElementById('scoreNum').textContent=score.toFixed(1);
+  document.getElementById('goodList').innerHTML=good.map(g=>`<div class="ana-item">${g}</div>`).join('')||'<div class="ana-item">Keep adding foods...</div>';
+  document.getElementById('badList').innerHTML=bad.map(b=>`<div class="ana-item">${b}</div>`).join('')||'<div class="ana-item" style="color:var(--pro)">No issues! Great day 🎉</div>';
+  const pills=[];
+  if(pp>=0.95)pills.push('<div class="vp g">💪 Protein Met</div>');
+  if(Math.abs(cd)<=150)pills.push('<div class="vp g">🔥 Calories On Target</div>');
+  if(cd>150)pills.push('<div class="vp r">⚠️ Calorie Surplus</div>');
+  if(cp>1.3)pills.push('<div class="vp y">⚡ Carbs High</div>');
+  if(fp>=0.8)pills.push('<div class="vp g">🌾 Fiber Good</div>');
+  document.getElementById('verdictRow').innerHTML=pills.join('');
+}
+
+// ── ACTIONS ────────────────────────────────────────
+function delItem(mid,itemId){mealData[mid]=mealData[mid].filter(f=>f.id!==itemId);save();renderAll();}
+function clearMeal(mid){mealData[mid]=[];save();renderAll();toast('🗑️ '+mid+' cleared');}
+function resetAll(){MEALS.forEach(m=>{mealData[m.id]=[];});save();renderAll();toast('🗑️ All meals cleared!');document.getElementById('analysisSection').style.display='none';}
+function saveGoals(){
+  goals={
+    cal:parseFloat(document.getElementById('g-cal').value)||1800,
+    pro:parseFloat(document.getElementById('g-pro').value)||150,
+    carb:parseFloat(document.getElementById('g-carb').value)||150,
+    fat:parseFloat(document.getElementById('g-fat').value)||62,
+    fib:25,
+  };
+  localStorage.setItem('mtp_goals',JSON.stringify(goals));
+  renderAll();toast('🎯 Goals saved!');
+}
+function setGoalInputs(){
+  document.getElementById('g-cal').value=goals.cal;
+  document.getElementById('g-pro').value=goals.pro;
+  document.getElementById('g-carb').value=goals.carb;
+  document.getElementById('g-fat').value=goals.fat;
+}
+function r2(n){return Math.round(n*10)/10;}
+function save(){localStorage.setItem('mtp_data',JSON.stringify(mealData));}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>
